@@ -7,7 +7,7 @@ module.exports = `
       name: String!
       password: String
       email: String!
-      dateOfBirth: Date!
+      date_of_birth: Date!
     }
     
     
@@ -17,6 +17,6 @@ module.exports = `
     }
     type Mutation {
       login (email: String!, password: String!): String
-      addUser (name: String!, email: String!, password: String!, dateOfBirth: String): User
+      addUser (name: String!, email: String!, password: String!, date_of_birth: Date): User
     }
   `;

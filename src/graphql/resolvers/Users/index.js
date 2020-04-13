@@ -1,4 +1,13 @@
 const db = require("../../../db");
+const bcrypt = require("bcrypt");
+
+// Generator of hash
+const encripta = async value => {
+  let saltRounds = 10;
+  let salt = bcrypt.genSaltSync(saltRounds);
+  let hash = await bcrypt.hashSync(value, salt);
+  return hash;
+};
 
 // Define resolvers
 module.exports = {
@@ -14,47 +23,23 @@ module.exports = {
   },
 
   Mutation: {
-    // Handles user login
+    //  login
     async login(_, { email, password }) {
-      return await db("users").where({ email: email, password: password }).first();
+      await db("users").where({ email: email, password: password }).first();
     },
 
-    // Create new user
-    async addUser(_, { name, email, dateOfBirth, password }) {
-      // let user = await db("users")
-      //   .where({ email: email })
-      //   .first()
-      //   .then(res => {
-      //     console.log("RESPONSE == ", res);
-      //   })
-      //   .catch(err => {
-      //     console.log("error == ", err);
-      //   });
-      // console.log("teste", user);
-
-      // if (user) {
-      // }
-      // return;
-      let response;
-      await db("users")
-        .insert({
-          name: name,
-          email: email,
-          date_of_birth: dateOfBirth,
-          password: password,
-          role_id: 1
-        })
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          console.log(err.detail);
-          response = err.detail;
-        });
-      return response;
-      //const id = result[0];
-      //console.log("aaaa", id);
-      //return await db("users").where({ id }).first();
+    // add new user
+    async addUser(_, { name, email, date_of_birth, password }) {
+      await db("users").insert({
+        name: name,
+        email: email,
+        date_of_birth: date_of_birth,
+        password: await encripta(password),
+        role_id: 1,
+        created_at: new Date(),
+        updated_at: new Date()
+      });
+      return await db("users").where({ name: name }).first();
     }
   }
 };
